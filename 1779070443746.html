@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Weekly Task Tracker",
+  "schemaVersion": 1,
+  "description": "Interactive weekly task tracker for 6 recurring tasks. Check off items as you go, navigate between weeks, and track progress with a live bar. State is saved per week via localStorage.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Task Tracker</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8f8f7;
+    color: #1a1a1a;
+    padding: 24px 20px;
+    min-height: 100vh;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .header-left h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .week-badge {
+    font-size: 13px;
+    color: #666;
+    margin-top: 3px;
+  }
+
+  .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .week-nav button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: #444;
+  }
+
+  .week-nav button:hover {
+    border-color: #aaa;
+    background: #f0f0f0;
+  }
+
+  .week-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .progress-bar-wrap {
+    background: #e8e8e6;
+    border-radius: 999px;
+    height: 6px;
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2d6a4f, #52b788);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+    text-align: right;
+  }
+
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .task-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1.5px solid #ebebeb;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .task-card:hover {
+    border-color: #c8c8c8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .task-card.done {
+    background: #f4faf7;
+    border-color: #b7dfc9;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #d0d0d0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .task-card.done .checkbox {
+    background: #2d6a4f;
+    border-color: #2d6a4f;
+  }
+
+  .checkbox svg {
+    display: none;
+  }
+
+  .task-card.done .checkbox svg {
+    display: block;
+  }
+
+  .task-info {
+    flex: 1;
+  }
+
+  .task-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    transition: color 0.15s;
+  }
+
+  .task-card.done .task-name {
+    color: #7aad91;
+    text-decoration: line-through;
+  }
+
+  .task-meta {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 2px;
+  }
+
+  .task-tag {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #f0f0ee;
+    color: #888;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .task-card.done .task-tag {
+    background: #d4eddf;
+    color: #2d6a4f;
+  }
+
+  .reset-btn {
+    margin-top: 22px;
+    width: 100%;
+    padding: 11px;
+    border: 1.5px dashed #ddd;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .reset-btn:hover {
+    border-color: #e07070;
+    color: #e07070;
+    background: #fff5f5;
+  }
+
+  .confetti-msg {
+    text-align: center;
+    padding: 14px;
+    font-size: 14px;
+    color: #2d6a4f;
+    font-weight: 600;
+    background: #eaf6f0;
+    border-radius: 10px;
+    margin-top: 14px;
+    display: none;
+  }
+
+  .confetti-msg.show {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Weekly Tasks</h1>
+    <div class="week-badge" id="week-badge">Week of —</div>
+  </div>
+  <div class="week-nav">
+    <button id="prev-week" title="Previous week">&#8592;</button>
+    <span class="week-label" id="week-label">Loading…</span>
+    <button id="next-week" title="Next week">&#8594;</button>
+  </div>
+</div>
+
+<div class="progress-text" id="progress-text">0 of 6 done</div>
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+</div>
+
+<div class="tasks-list" id="tasks-list"></div>
+
+<div class="confetti-msg" id="confetti-msg">🎉 All tasks complete — great week!</div>
+
+<button class="reset-btn" id="reset-btn">Reset this week</button>
+
+<script>
+  const TASKS = [
+    { id: 'copilot',        name: 'Co-pilot',                  tag: 'Weekly' },
+    { id: 'autoqa',         name: 'AutoQA',                    tag: 'Weekly' },
+    { id: 'lowes-qa',       name: "Lowe's QA Program",         tag: 'Weekly' },
+    { id: 'pro-churn',      name: 'Pro Success Churn',         tag: 'Weekly' },
+    { id: 'smb-rubric',     name: 'Large Pro / SMB Rubric',    tag: 'Weekly' },
+    { id: 'churn-insights', name: 'Churn Insights & Reporting', tag: 'Weekly' },
+  ];
+
+  // Week helpers
+  function getMondayOf(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function weekKey(monday) {
+    return monday.toISOString().slice(0, 10);
+  }
+
+  function formatWeekLabel(monday) {
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    const opts = { month: 'short', day: 'numeric' };
+    return monday.toLocaleDateString('en-US', opts) + ' – ' + friday.toLocaleDateString('en-US', opts);
+  }
+
+  function formatBadge(monday) {
+    const now = getMondayOf(new Date());
+    const diff = (monday - now) / (7 * 24 * 3600 * 1000);
+    if (diff === 0) return 'This week';
+    if (diff === -1) return 'Last week';
+    if (diff === 1) return 'Next week';
+    return 'Week of ' + monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // State
+  let currentMonday = getMondayOf(new Date());
+
+  function storageKey(monday) {
+    return 'wt_' + weekKey(monday);
+  }
+
+  function loadState(monday) {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey(monday))) || {};
+    } catch { return {}; }
+  }
+
+  function saveState(monday, state) {
+    localStorage.setItem(storageKey(monday), JSON.stringify(state));
+  }
+
+  // Render
+  function render() {
+    const state = loadState(currentMonday);
+    const list = document.getElementById('tasks-list');
+    list.innerHTML = '';
+
+    TASKS.forEach(task => {
+      const done = !!state[task.id];
+      const card = document.createElement('div');
+      card.className = 'task-card' + (done ? ' done' : '');
+      card.innerHTML = `
+        <div class="checkbox">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="task-info">
+          <div class="task-name">${task.name}</div>
+        </div>
+        <span class="task-tag">${done ? 'Done' : task.tag}</span>
+      `;
+      card.addEventListener('click', () => {
+        const s = loadState(currentMonday);
+        s[task.id] = !s[task.id];
+        saveState(currentMonday, s);
+        render();
+      });
+      list.appendChild(card);
+    });
+
+    // Progress
+    const doneCount = TASKS.filter(t => !!state[t.id]).length;
+    const total = TASKS.length;
+    const pct = Math.round((doneCount / total) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = doneCount + ' of ' + total + ' done';
+
+    // Celebration
+    const msg = document.getElementById('confetti-msg');
+    if (doneCount === total) {
+      msg.classList.add('show');
+    } else {
+      msg.classList.remove('show');
+    }
+
+    // Week labels
+    document.getElementById('week-label').textContent = formatWeekLabel(currentMonday);
+    document.getElementById('week-badge').textContent = formatBadge(currentMonday);
+  }
+
+  document.getElementById('prev-week').addEventListener('click', () => {
+    currentMonday = new Date(currentMonday);
+    currentMonday.setDate(currentMonday.getDate() - 7);
+    render();
+  });
+
+  document.getElementById('next-week').addEventListener('click', () => {
+    currentMonday = new Date(currentMonday);
+    currentMonday.setDate(currentMonday.getDate() + 7);
+    render();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('Reset all tasks for this week?')) {
+      saveState(currentMonday, {});
+      render();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
