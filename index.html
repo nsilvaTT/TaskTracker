@@ -14,341 +14,389 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weekly Task Tracker</title>
 <style>
-  :root {
-    color-scheme: light;
-    --bg: #f5f5f3;
-    --card: #ffffff;
-    --border: #e8e8e6;
-    --text: #1a1a1a;
-    --muted: #888;
-    --green: #2d6a4f;
-    --green-light: #eaf6f0;
-    --green-mid: #52b788;
-    --yellow: #b45309;
-    --yellow-light: #fef3c7;
-    --red: #b91c1c;
-    --red-light: #fee2e2;
-    --blue: #1d4ed8;
-    --blue-light: #eff6ff;
-    --gray-light: #f0f0ee;
-    --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4;
+  --card: #ffffff;
+  --border: #e4e4e2;
+  --text: #111;
+  --muted: #999;
+  --accent: #1a56db;
+  --accent-light: #eff6ff;
+  --green: #166534;
+  --green-bg: #dcfce7;
+  --yellow: #92400e;
+  --yellow-bg: #fef3c7;
+  --red: #991b1b;
+  --red-bg: #fee2e2;
+  --purple: #5b21b6;
+  --purple-bg: #ede9fe;
+  --orange: #9a3412;
+  --orange-bg: #ffedd5;
+  --gray-bg: #f3f4f6;
+  --radius: 14px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
 
-  /* TOP BAR */
-  .topbar {
-    background: white;
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .topbar h1 { font-size: 17px; font-weight: 700; }
-  .week-nav { display: flex; align-items: center; gap: 8px; }
-  .week-nav button {
-    width: 28px; height: 28px; border-radius: 50%;
-    border: 1.5px solid var(--border); background: white;
-    cursor: pointer; font-size: 13px; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.15s; color: #555;
-  }
-  .week-nav button:hover { border-color: #aaa; background: #f5f5f5; }
-  .week-range { font-size: 13px; font-weight: 600; color: #444; min-width: 160px; text-align: center; }
-  .week-chip {
-    font-size: 11px; font-weight: 700; padding: 3px 10px;
-    border-radius: 999px; background: var(--green-light);
-    color: var(--green); text-transform: uppercase; letter-spacing: 0.05em;
-  }
+/* ── TOP HEADER ── */
+.header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; flex: 1; }
+.header-title span { color: var(--accent); }
 
-  /* SUMMARY BAR */
-  .summary-bar {
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .progress-wrap { flex: 1; }
-  .progress-track {
-    height: 5px; background: var(--border); border-radius: 999px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--green), var(--green-mid));
-    border-radius: 999px; transition: width 0.4s ease;
-  }
-  .progress-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .stat-chips { display: flex; gap: 8px; flex-shrink: 0; }
-  .stat-chip {
-    font-size: 11px; font-weight: 600; padding: 4px 10px;
-    border-radius: 999px; border: 1.5px solid var(--border);
-    background: white; color: #666; white-space: nowrap;
-  }
+.week-nav { display: flex; align-items: center; gap: 6px; }
+.nav-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  border: 1px solid var(--border); background: white;
+  cursor: pointer; font-size: 13px; display: flex;
+  align-items: center; justify-content: center;
+  color: #666; transition: all 0.12s;
+}
+.nav-btn:hover { background: var(--gray-bg); border-color: #ccc; }
+.week-label {
+  font-size: 13px; font-weight: 600; color: #333;
+  min-width: 170px; text-align: center;
+}
+.this-week-chip {
+  font-size: 11px; font-weight: 700; padding: 2px 9px;
+  border-radius: 999px; background: var(--accent-light);
+  color: var(--accent); letter-spacing: 0.03em;
+}
 
-  /* PROJECTS GRID */
-  .projects { padding: 0 24px 32px; display: flex; flex-direction: column; gap: 12px; }
+/* ── STATS ROW ── */
+.stats-row {
+  padding: 14px 28px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.stat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 100px;
+}
+.stat-val { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+.stat-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-card.green .stat-val { color: var(--green); }
+.stat-card.yellow .stat-val { color: var(--yellow); }
+.stat-card.red .stat-val { color: var(--red); }
 
-  /* PROJECT CARD */
-  .project-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: box-shadow 0.15s;
-  }
-  .project-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.progress-card {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+.prog-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.prog-label { font-size: 12px; font-weight: 600; color: #444; }
+.prog-pct { font-size: 12px; font-weight: 700; color: var(--accent); }
+.prog-track { height: 6px; background: var(--gray-bg); border-radius: 999px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); border-radius: 999px; transition: width 0.4s ease; }
 
-  .project-header {
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    user-select: none;
-  }
+/* ── TABLE ── */
+.table-wrap { padding: 0 28px 32px; }
+.table-header {
+  display: grid;
+  grid-template-columns: 32px 1fr 110px 130px 130px 36px;
+  gap: 0;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.project-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+}
+.project-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06); }
 
-  .project-check {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 2px solid var(--border); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: white; transition: all 0.15s;
-    cursor: pointer;
-  }
-  .project-check.done { background: var(--green); border-color: var(--green); }
-  .project-check svg { display: none; }
-  .project-check.done svg { display: block; }
+.project-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 110px 130px 130px 36px;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 0;
+}
 
-  .project-title { font-size: 15px; font-weight: 600; flex: 1; }
-  .project-card.all-done .project-title { color: #aaa; text-decoration: line-through; }
+.row-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: white; transition: all 0.15s; cursor: pointer;
+}
+.row-check.done { background: var(--green); border-color: var(--green); }
+.row-check svg { display: none; }
+.row-check.done svg { display: block; }
 
-  .project-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.row-name { font-size: 14px; font-weight: 600; padding-right: 12px; }
+.project-card.all-done .row-name { color: #bbb; text-decoration: line-through; }
 
-  .status-badge {
-    font-size: 11px; font-weight: 700; padding: 3px 9px;
-    border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em;
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .status-badge:hover { opacity: 0.8; }
-  .status-badge.on-track { background: var(--green-light); color: var(--green); }
-  .status-badge.at-risk   { background: var(--yellow-light); color: var(--yellow); }
-  .status-badge.blocked   { background: var(--red-light); color: var(--red); }
-  .status-badge.done      { background: var(--green-light); color: var(--green); }
+.priority-badge {
+  font-size: 11px; font-weight: 700; padding: 3px 9px;
+  border-radius: 6px; cursor: pointer; width: fit-content;
+  transition: opacity 0.15s; letter-spacing: 0.02em;
+}
+.priority-badge:hover { opacity: 0.75; }
+.priority-badge.p1 { background: var(--red-bg); color: var(--red); }
+.priority-badge.p2 { background: var(--orange-bg); color: var(--orange); }
+.priority-badge.p3 { background: var(--yellow-bg); color: var(--yellow); }
+.priority-badge.p4 { background: var(--gray-bg); color: #666; }
 
-  .priority-dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    cursor: pointer; transition: transform 0.15s;
-  }
-  .priority-dot:hover { transform: scale(1.3); }
-  .priority-dot.high   { background: var(--red); }
-  .priority-dot.medium { background: #f59e0b; }
-  .priority-dot.low    { background: #94a3b8; }
+.status-badge {
+  font-size: 11px; font-weight: 700; padding: 3px 9px;
+  border-radius: 6px; cursor: pointer; width: fit-content;
+  transition: opacity 0.15s;
+}
+.status-badge:hover { opacity: 0.75; }
+.status-badge.not-started { background: var(--gray-bg); color: #666; }
+.status-badge.in-progress { background: var(--accent-light); color: var(--accent); }
+.status-badge.partial     { background: var(--yellow-bg); color: var(--yellow); }
+.status-badge.complete    { background: var(--green-bg); color: var(--green); }
+.status-badge.blocked     { background: var(--red-bg); color: var(--red); }
 
-  .subtask-count {
-    font-size: 12px; color: var(--muted);
-    background: var(--gray-light); padding: 2px 8px;
-    border-radius: 999px;
-  }
+.expand-btn {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--gray-bg); border: none; cursor: pointer;
+  font-size: 11px; color: #888; display: flex;
+  align-items: center; justify-content: center;
+  transition: all 0.15s; margin-left: auto;
+}
+.expand-btn:hover { background: var(--border); }
+.project-card.open .expand-btn { background: var(--accent-light); color: var(--accent); }
+.expand-icon { transition: transform 0.2s; }
+.project-card.open .expand-icon { transform: rotate(180deg); }
 
-  .expand-arrow {
-    font-size: 12px; color: var(--muted);
-    transition: transform 0.2s;
-  }
-  .project-card.open .expand-arrow { transform: rotate(180deg); }
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  display: none;
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+  padding: 20px;
+  gap: 16px;
+  flex-direction: column;
+}
+.project-card.open .detail-panel { display: flex; }
 
-  /* PROJECT BODY */
-  .project-body {
-    display: none;
-    border-top: 1px solid var(--border);
-    padding: 16px 18px;
-    gap: 16px;
-    flex-direction: column;
-  }
-  .project-card.open .project-body { display: flex; }
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.detail-field { display: flex; flex-direction: column; gap: 5px; }
+.detail-label {
+  font-size: 10px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.detail-input, .detail-textarea, .detail-select {
+  font-size: 13px; font-family: inherit;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; background: white; color: var(--text);
+  outline: none; transition: border-color 0.15s; width: 100%;
+}
+.detail-input:focus, .detail-textarea:focus, .detail-select:focus { border-color: var(--accent); }
+.detail-textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+.detail-select { cursor: pointer; }
 
-  /* META ROW */
-  .meta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .meta-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
-  .meta-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .meta-input {
-    font-size: 13px; font-family: inherit;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    padding: 7px 10px; background: white; color: var(--text);
-    outline: none; transition: border-color 0.15s; width: 100%;
-  }
-  .meta-input:focus { border-color: var(--green); }
+/* PARTNERS */
+.partners-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.partner-tag {
+  font-size: 12px; font-weight: 500; padding: 3px 10px;
+  background: var(--purple-bg); color: var(--purple);
+  border-radius: 999px; display: flex; align-items: center; gap: 5px;
+}
+.partner-remove {
+  background: none; border: none; cursor: pointer;
+  color: var(--purple); font-size: 14px; line-height: 1; padding: 0; opacity: 0.5;
+}
+.partner-remove:hover { opacity: 1; }
+.add-partner-input {
+  font-size: 12px; font-family: inherit;
+  border: 1.5px dashed var(--border); border-radius: 999px;
+  padding: 3px 11px; background: white; color: var(--text);
+  outline: none; width: 130px; transition: all 0.15s;
+}
+.add-partner-input:focus { border-color: var(--purple); border-style: solid; }
+.add-partner-input::placeholder { color: #ccc; }
 
-  /* PARTNERS */
-  .partners-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .partner-tag {
-    font-size: 12px; font-weight: 500; padding: 3px 10px;
-    background: var(--blue-light); color: var(--blue);
-    border-radius: 999px; display: flex; align-items: center; gap: 5px;
-  }
-  .partner-tag button {
-    background: none; border: none; cursor: pointer;
-    color: var(--blue); font-size: 13px; line-height: 1;
-    padding: 0; opacity: 0.6;
-  }
-  .partner-tag button:hover { opacity: 1; }
-  .add-partner-input {
-    font-size: 12px; font-family: inherit;
-    border: 1.5px dashed var(--border); border-radius: 999px;
-    padding: 3px 10px; background: white; color: var(--text);
-    outline: none; width: 130px; transition: border-color 0.15s;
-  }
-  .add-partner-input:focus { border-color: var(--blue); border-style: solid; }
-  .add-partner-input::placeholder { color: #bbb; }
+/* SUBTASKS */
+.subtasks-section { display: flex; flex-direction: column; gap: 8px; }
+.subtask-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; background: white;
+  border-radius: 8px; border: 1px solid var(--border);
+}
+.subtask-cb {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 2px solid var(--border); flex-shrink: 0;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; background: white; transition: all 0.15s;
+}
+.subtask-cb.checked { background: var(--accent); border-color: var(--accent); }
+.subtask-cb.checked svg { display: block; }
+.subtask-cb svg { display: none; }
+.subtask-text {
+  flex: 1; font-size: 13px; font-family: inherit;
+  border: none; background: transparent; outline: none; color: var(--text);
+}
+.subtask-text.done-text { text-decoration: line-through; color: #bbb; }
+.subtask-del {
+  background: none; border: none; cursor: pointer;
+  color: #ddd; font-size: 15px; padding: 0; line-height: 1;
+  opacity: 0; transition: opacity 0.15s, color 0.15s;
+}
+.subtask-item:hover .subtask-del { opacity: 1; }
+.subtask-del:hover { color: var(--red); }
+.add-sub-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 8px;
+  border: 1.5px dashed var(--border); background: transparent;
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  font-family: inherit; transition: all 0.15s; width: fit-content;
+}
+.add-sub-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
-  /* SUBTASKS */
-  .subtasks-section { display: flex; flex-direction: column; gap: 8px; }
-  .subtasks-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .subtask-list { display: flex; flex-direction: column; gap: 6px; }
-  .subtask-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px; background: var(--bg);
-    border-radius: 8px; border: 1px solid transparent;
-    transition: border-color 0.15s;
-  }
-  .subtask-item:hover { border-color: var(--border); }
-  .subtask-cb {
-    width: 16px; height: 16px; border-radius: 4px;
-    border: 2px solid var(--border); flex-shrink: 0;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    background: white; transition: all 0.15s;
-  }
-  .subtask-cb.checked { background: var(--green); border-color: var(--green); }
-  .subtask-cb.checked svg { display: block; }
-  .subtask-cb svg { display: none; }
-  .subtask-text {
-    flex: 1; font-size: 13px; font-family: inherit;
-    border: none; background: transparent; outline: none; color: var(--text);
-    padding: 0;
-  }
-  .subtask-text.done-text { text-decoration: line-through; color: #bbb; }
-  .subtask-delete {
-    background: none; border: none; cursor: pointer;
-    color: #ccc; font-size: 14px; padding: 0; line-height: 1;
-    opacity: 0; transition: opacity 0.15s, color 0.15s;
-  }
-  .subtask-item:hover .subtask-delete { opacity: 1; }
-  .subtask-delete:hover { color: var(--red); }
+/* FRIDAY OUTCOME tag */
+.outcome-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.outcome-tag {
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: 6px; cursor: pointer; transition: all 0.12s;
+  border: 1.5px solid transparent;
+}
+.outcome-tag.selected { border-color: currentColor; }
+.outcome-tag.no-progress  { background: var(--gray-bg); color: #666; }
+.outcome-tag.partial      { background: var(--yellow-bg); color: var(--yellow); }
+.outcome-tag.full-progress{ background: var(--green-bg); color: var(--green); }
+.outcome-tag.blocked      { background: var(--red-bg); color: var(--red); }
 
-  .add-subtask-btn {
-    display: flex; align-items: center; gap: 7px;
-    padding: 7px 12px; border-radius: 8px;
-    border: 1.5px dashed var(--border); background: transparent;
-    font-size: 13px; color: var(--muted); cursor: pointer;
-    font-family: inherit; transition: all 0.15s; width: fit-content;
-  }
-  .add-subtask-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+/* POPOVER */
+.popover {
+  position: fixed; z-index: 300;
+  background: white; border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 5px; display: none; flex-direction: column;
+  min-width: 160px;
+}
+.popover.show { display: flex; }
+.pop-item {
+  padding: 8px 12px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; font-weight: 500; transition: background 0.1s;
+  display: flex; align-items: center; gap: 8px; color: var(--text);
+}
+.pop-item:hover { background: var(--gray-bg); }
+.pop-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-  /* STATUS PICKER POPOVER */
-  .popover {
-    position: fixed; z-index: 200;
-    background: white; border: 1.5px solid var(--border);
-    border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    padding: 6px; display: none; flex-direction: column; gap: 2px;
-    min-width: 140px;
-  }
-  .popover.show { display: flex; }
-  .popover-item {
-    padding: 7px 12px; border-radius: 7px; cursor: pointer;
-    font-size: 13px; font-weight: 500; transition: background 0.1s;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .popover-item:hover { background: var(--bg); }
-
-  /* DONE MESSAGE */
-  .done-banner {
-    margin: 0 24px 16px;
-    padding: 12px 18px;
-    background: var(--green-light);
-    border: 1.5px solid #b7dfc9;
-    border-radius: var(--radius);
-    font-size: 14px; font-weight: 600; color: var(--green);
-    text-align: center; display: none;
-    animation: fadeIn 0.4s ease;
-  }
-  .done-banner.show { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 999px; }
+/* DONE BANNER */
+.done-banner {
+  margin: 0 28px 14px;
+  padding: 12px 18px;
+  background: var(--green-bg);
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  font-size: 14px; font-weight: 600; color: var(--green);
+  text-align: center; display: none;
+  animation: fadein 0.3s ease;
+}
+.done-banner.show { display: block; }
+@keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <h1>Weekly Tasks</h1>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">QA <span>Task Tracker</span></div>
   <div class="week-nav">
-    <button id="prev-week">&#8592;</button>
-    <span class="week-range" id="week-range">—</span>
-    <button id="next-week">&#8594;</button>
-    <span class="week-chip" id="week-chip">This Week</span>
+    <button class="nav-btn" id="prev-week">&#8592;</button>
+    <span class="week-label" id="week-label">—</span>
+    <button class="nav-btn" id="next-week">&#8594;</button>
+    <span class="this-week-chip" id="week-chip">This Week</span>
   </div>
 </div>
 
-<!-- SUMMARY BAR -->
-<div class="summary-bar">
-  <div class="progress-wrap">
-    <div class="progress-label" id="progress-label">0 of 6 projects with all tasks done</div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card green">
+    <div class="stat-val" id="stat-done">0</div>
+    <div class="stat-label">Complete</div>
   </div>
-  <div class="stat-chips">
-    <span class="stat-chip" id="chip-blocked">0 Blocked</span>
-    <span class="stat-chip" id="chip-at-risk">0 At Risk</span>
-    <span class="stat-chip" id="chip-done">0 Done</span>
+  <div class="stat-card yellow">
+    <div class="stat-val" id="stat-progress">0</div>
+    <div class="stat-label">In Progress</div>
   </div>
-</div>
-
-<div class="done-banner" id="done-banner">🎉 All projects complete — great week!</div>
-
-<!-- PROJECTS -->
-<div class="projects" id="projects-list"></div>
-
-<!-- STATUS POPOVER -->
-<div class="popover" id="status-popover">
-  <div class="popover-item" data-status="on-track">
-    <span style="width:8px;height:8px;border-radius:50%;background:#2d6a4f;display:inline-block"></span> On Track
+  <div class="stat-card red">
+    <div class="stat-val" id="stat-blocked">0</div>
+    <div class="stat-label">Blocked</div>
   </div>
-  <div class="popover-item" data-status="at-risk">
-    <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></span> At Risk
-  </div>
-  <div class="popover-item" data-status="blocked">
-    <span style="width:8px;height:8px;border-radius:50%;background:#b91c1c;display:inline-block"></span> Blocked
-  </div>
-  <div class="popover-item" data-status="done">
-    <span style="width:8px;height:8px;border-radius:50%;background:#2d6a4f;display:inline-block"></span> Done
+  <div class="progress-card">
+    <div class="prog-top">
+      <span class="prog-label" id="prog-label">Weekly Progress</span>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
 </div>
 
-<!-- PRIORITY POPOVER -->
-<div class="popover" id="priority-popover">
-  <div class="popover-item" data-priority="high">
-    <span style="width:8px;height:8px;border-radius:50%;background:#b91c1c;display:inline-block"></span> High
+<div class="done-banner" id="done-banner">🎉 All projects complete — great week, Narco!</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="table-header">
+    <div></div>
+    <div>Task</div>
+    <div>Priority</div>
+    <div>Status</div>
+    <div>Est. Effort</div>
+    <div></div>
   </div>
-  <div class="popover-item" data-priority="medium">
-    <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block"></span> Medium
-  </div>
-  <div class="popover-item" data-priority="low">
-    <span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block"></span> Low
-  </div>
+  <div id="projects-list"></div>
+</div>
+
+<!-- POPOVERS -->
+<div class="popover" id="priority-pop">
+  <div class="pop-item" data-val="p1"><span class="pop-dot" style="background:#991b1b"></span>P1 – Critical</div>
+  <div class="pop-item" data-val="p2"><span class="pop-dot" style="background:#9a3412"></span>P2 – High</div>
+  <div class="pop-item" data-val="p3"><span class="pop-dot" style="background:#92400e"></span>P3 – Medium</div>
+  <div class="pop-item" data-val="p4"><span class="pop-dot" style="background:#6b7280"></span>P4 – Low</div>
+</div>
+<div class="popover" id="status-pop">
+  <div class="pop-item" data-val="not-started"><span class="pop-dot" style="background:#9ca3af"></span>Not Started</div>
+  <div class="pop-item" data-val="in-progress"><span class="pop-dot" style="background:#1a56db"></span>In Progress</div>
+  <div class="pop-item" data-val="partial"><span class="pop-dot" style="background:#92400e"></span>Partial Progress</div>
+  <div class="pop-item" data-val="complete"><span class="pop-dot" style="background:#166534"></span>Complete</div>
+  <div class="pop-item" data-val="blocked"><span class="pop-dot" style="background:#991b1b"></span>Blocked</div>
 </div>
 
 <script>
@@ -361,333 +409,253 @@ const PROJECTS = [
   { id: 'churn-insights', name: 'Churn Insights & Reporting' },
 ];
 
+const PRIORITY_LABELS = { p1: 'P1 – Critical', p2: 'P2 – High', p3: 'P3 – Medium', p4: 'P4 – Low' };
+const STATUS_LABELS   = { 'not-started': 'Not Started', 'in-progress': 'In Progress', 'partial': 'Partial Progress', 'complete': 'Complete', 'blocked': 'Blocked' };
+const EFFORT_OPTS     = ['', 'Low', 'Medium', 'High'];
+const OUTCOME_OPTS    = [
+  { val: 'no-progress',   label: 'No Progress' },
+  { val: 'partial',       label: 'Partial Progress' },
+  { val: 'full-progress', label: 'Full Progress' },
+  { val: 'blocked',       label: 'Blocked' },
+];
+
 // ─── Week helpers ─────────────────────────────────────────────────────────────
 function getMonday(d) {
-  const date = new Date(d);
-  const day = date.getDay();
-  date.setDate(date.getDate() - (day === 0 ? 6 : day - 1));
-  date.setHours(0,0,0,0);
-  return date;
+  const dt = new Date(d); const day = dt.getDay();
+  dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
+  dt.setHours(0,0,0,0); return dt;
 }
 function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 function fmt(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-function weekKey(monday) { return monday.toISOString().slice(0,10); }
+function fmtMonth(d) { return d.toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' }); }
+function weekKey(m) { return m.toISOString().slice(0,10); }
 
 let currentMonday = getMonday(new Date());
 
+// ─── Storage ──────────────────────────────────────────────────────────────────
+function loadWeek(m) { try { return JSON.parse(localStorage.getItem('qatt_' + weekKey(m))) || {}; } catch { return {}; } }
+function saveWeek(m, d) { localStorage.setItem('qatt_' + weekKey(m), JSON.stringify(d)); }
+function getP(m, id) {
+  return loadWeek(m)[id] || {
+    priority: 'p2', status: 'not-started', effort: '',
+    mondayGoal: '', fridayOutcome: '', notes: '',
+    partners: [], subtasks: []
+  };
+}
+function setP(m, id, p) { const w = loadWeek(m); w[id] = p; saveWeek(m, w); }
+
 // ─── State ────────────────────────────────────────────────────────────────────
-function loadWeek(monday) {
-  try { return JSON.parse(localStorage.getItem('wtt_' + weekKey(monday))) || {}; }
-  catch { return {}; }
-}
-function saveWeek(monday, data) {
-  localStorage.setItem('wtt_' + weekKey(monday), JSON.stringify(data));
-}
-function getProject(monday, id) {
-  const week = loadWeek(monday);
-  return week[id] || { status: 'on-track', priority: 'medium', dueDate: '', partners: [], subtasks: [] };
-}
-function setProject(monday, id, proj) {
-  const week = loadWeek(monday);
-  week[id] = proj;
-  saveWeek(monday, week);
-}
+let openCards = new Set();
+let activePriorityId = null, activeStatusId = null;
 
 // ─── Render ───────────────────────────────────────────────────────────────────
-let openCards = new Set();
-let activeStatusTarget = null;
-let activePriorityTarget = null;
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function render() {
-  // Week labels
-  const friday = addDays(currentMonday, 4);
-  document.getElementById('week-range').textContent = fmt(currentMonday) + ' – ' + fmt(friday);
+  const fri = addDays(currentMonday, 4);
   const now = getMonday(new Date());
   const diff = (currentMonday - now) / (7*86400000);
-  document.getElementById('week-chip').textContent =
-    diff === 0 ? 'This Week' : diff === -1 ? 'Last Week' : diff === 1 ? 'Next Week' :
-    fmt(currentMonday) + ' week';
+  document.getElementById('week-label').textContent = fmt(currentMonday) + ' – ' + fmt(fri);
+  document.getElementById('week-chip').textContent = diff===0?'This Week':diff===-1?'Last Week':diff===1?'Next Week':fmt(currentMonday);
 
+  let doneC=0, inProgC=0, blockedC=0;
   const list = document.getElementById('projects-list');
   list.innerHTML = '';
 
-  let doneCount = 0, blockedCount = 0, atRiskCount = 0;
-
   PROJECTS.forEach(proj => {
-    const p = getProject(currentMonday, proj.id);
-    const allDone = p.subtasks.length > 0 && p.subtasks.every(s => s.done);
-    if (allDone || p.status === 'done') doneCount++;
-    if (p.status === 'blocked') blockedCount++;
-    if (p.status === 'at-risk') atRiskCount++;
-
-    const doneSubs = p.subtasks.filter(s => s.done).length;
-    const totalSubs = p.subtasks.length;
+    const p = getP(currentMonday, proj.id);
     const isOpen = openCards.has(proj.id);
+    if (p.status === 'complete') doneC++;
+    if (p.status === 'in-progress' || p.status === 'partial') inProgC++;
+    if (p.status === 'blocked') blockedC++;
+
+    const doneSubs = p.subtasks.filter(s=>s.done).length;
+    const totalSubs = p.subtasks.length;
 
     const card = document.createElement('div');
-    card.className = 'project-card' + (isOpen ? ' open' : '') + (allDone || p.status === 'done' ? ' all-done' : '');
+    card.className = 'project-card' + (isOpen?' open':'') + (p.status==='complete'?' all-done':'');
     card.dataset.id = proj.id;
 
-    const statusLabel = { 'on-track': 'On Track', 'at-risk': 'At Risk', 'blocked': 'Blocked', 'done': 'Done' }[p.status] || 'On Track';
+    const outcomeHtml = OUTCOME_OPTS.map(o =>
+      `<span class="outcome-tag ${o.val} ${p.fridayOutcome===o.val?'selected':''}" data-outcome="${o.val}" data-oid="${proj.id}">${o.label}</span>`
+    ).join('');
+
+    const subtasksHtml = p.subtasks.map((st, i) => `
+      <div class="subtask-item">
+        <div class="subtask-cb ${st.done?'checked':''}" data-cb="${proj.id}" data-idx="${i}">
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2 2L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <input class="subtask-text ${st.done?'done-text':''}" value="${esc(st.text)}" placeholder="Sub-task…" data-st="${proj.id}" data-idx="${i}">
+        <button class="subtask-del" data-stdel="${proj.id}" data-idx="${i}">×</button>
+      </div>
+    `).join('');
+
+    const partnersHtml = p.partners.map((name, i) => `
+      <span class="partner-tag">${esc(name)}<button class="partner-remove" data-premove="${proj.id}" data-idx="${i}">×</button></span>
+    `).join('');
 
     card.innerHTML = `
-      <div class="project-header">
-        <div class="project-check ${allDone || p.status==='done' ? 'done' : ''}" data-check="${proj.id}">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div class="project-row">
+        <div class="row-check ${p.status==='complete'?'done':''}" data-check="${proj.id}">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="project-title">${proj.name}</div>
-        <div class="project-meta">
-          ${p.dueDate ? `<span style="font-size:12px;color:var(--muted)">📅 ${formatDate(p.dueDate)}</span>` : ''}
-          ${totalSubs > 0 ? `<span class="subtask-count">${doneSubs}/${totalSubs}</span>` : ''}
-          <span class="priority-dot ${p.priority || 'medium'}" title="${p.priority || 'medium'} priority" data-priority-btn="${proj.id}"></span>
-          <span class="status-badge ${p.status || 'on-track'}" data-status-btn="${proj.id}">${statusLabel}</span>
+        <div class="row-name">
+          ${esc(proj.name)}
+          ${totalSubs>0?`<span style="font-size:11px;color:var(--muted);font-weight:500;margin-left:8px">${doneSubs}/${totalSubs} tasks</span>`:''}
         </div>
-        <span class="expand-arrow">▾</span>
+        <div>
+          <span class="priority-badge ${p.priority}" data-pbtn="${proj.id}">${PRIORITY_LABELS[p.priority]||'P2 – High'}</span>
+        </div>
+        <div>
+          <span class="status-badge ${p.status}" data-sbtn="${proj.id}">${STATUS_LABELS[p.status]||'Not Started'}</span>
+        </div>
+        <div>
+          <select class="detail-select" style="font-size:12px;padding:4px 8px;border-radius:6px" data-effort="${proj.id}">
+            ${EFFORT_OPTS.map(e=>`<option value="${e}" ${p.effort===e?'selected':''}>${e||'— Select —'}</option>`).join('')}
+          </select>
+        </div>
+        <div><button class="expand-btn" data-expand="${proj.id}"><span class="expand-icon">▾</span></button></div>
       </div>
-      <div class="project-body">
-        <div class="meta-row">
-          <div class="meta-field">
-            <span class="meta-label">Due Date</span>
-            <input type="date" class="meta-input" data-field="dueDate" data-id="${proj.id}" value="${p.dueDate || ''}">
+
+      <div class="detail-panel">
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="detail-label">📅 Due Date</span>
+            <input type="date" class="detail-input" data-due="${proj.id}" value="${p.dueDate||''}">
           </div>
-          <div class="meta-field">
-            <span class="meta-label">Partners</span>
-            <div class="partners-wrap" data-partners="${proj.id}">
-              ${p.partners.map((name, i) => `
-                <span class="partner-tag">
-                  ${name}
-                  <button data-remove-partner="${i}" data-partner-id="${proj.id}">×</button>
-                </span>
-              `).join('')}
-              <input class="add-partner-input" placeholder="Add partner…" data-partner-input="${proj.id}">
-            </div>
+          <div class="detail-field">
+            <span class="detail-label">📌 Monday Goal</span>
+            <textarea class="detail-textarea" data-monday="${proj.id}" placeholder="What do you want to achieve this week?">${esc(p.mondayGoal||'')}</textarea>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">🗒️ Notes / Blockers</span>
+            <textarea class="detail-textarea" data-notes="${proj.id}" placeholder="Any blockers or notes…">${esc(p.notes||'')}</textarea>
           </div>
         </div>
-        <div class="subtasks-section">
-          <span class="subtasks-label">Sub-tasks</span>
-          <div class="subtask-list" data-subtasks="${proj.id}">
-            ${p.subtasks.map((st, i) => `
-              <div class="subtask-item" data-subtask-idx="${i}">
-                <div class="subtask-cb ${st.done ? 'checked' : ''}" data-cb="${proj.id}" data-idx="${i}">
-                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                    <path d="M1 3.5l2 2L8 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <input class="subtask-text ${st.done ? 'done-text' : ''}" value="${escHtml(st.text)}" placeholder="Task name…" data-st-text="${proj.id}" data-idx="${i}">
-                <button class="subtask-delete" data-st-delete="${proj.id}" data-idx="${i}">×</button>
-              </div>
-            `).join('')}
+
+        <div class="detail-field">
+          <span class="detail-label">✅ Friday Outcome</span>
+          <div class="outcome-tags">${outcomeHtml}</div>
+        </div>
+
+        <div class="detail-field">
+          <span class="detail-label">👥 Partners</span>
+          <div class="partners-row">
+            ${partnersHtml}
+            <input class="add-partner-input" placeholder="Add partner, press Enter" data-pinput="${proj.id}">
           </div>
-          <button class="add-subtask-btn" data-add-subtask="${proj.id}">+ Add sub-task</button>
+        </div>
+
+        <div class="subtasks-section">
+          <span class="detail-label">☑️ Sub-tasks</span>
+          <div class="subtask-list">${subtasksHtml}</div>
+          <button class="add-sub-btn" data-addsub="${proj.id}">+ Add sub-task</button>
         </div>
       </div>
     `;
     list.appendChild(card);
   });
 
-  // Progress
-  const total = PROJECTS.length;
-  const pct = Math.round((doneCount / total) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = `${doneCount} of ${total} projects complete`;
-  document.getElementById('chip-blocked').textContent = `${blockedCount} Blocked`;
-  document.getElementById('chip-at-risk').textContent = `${atRiskCount} At Risk`;
-  document.getElementById('chip-done').textContent = `${doneCount} Done`;
-
-  const banner = document.getElementById('done-banner');
-  doneCount === total ? banner.classList.add('show') : banner.classList.remove('show');
+  // Stats
+  document.getElementById('stat-done').textContent = doneC;
+  document.getElementById('stat-progress').textContent = inProgC;
+  document.getElementById('stat-blocked').textContent = blockedC;
+  const pct = Math.round((doneC / PROJECTS.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-label').textContent = `${doneC} of ${PROJECTS.length} complete`;
+  document.getElementById('done-banner').classList.toggle('show', doneC === PROJECTS.length);
 }
-
-function formatDate(str) {
-  if (!str) return '';
-  const d = new Date(str + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ─── Events ───────────────────────────────────────────────────────────────────
-document.getElementById('prev-week').addEventListener('click', () => {
-  currentMonday = addDays(currentMonday, -7); render();
-});
-document.getElementById('next-week').addEventListener('click', () => {
-  currentMonday = addDays(currentMonday, 7); render();
-});
+document.getElementById('prev-week').addEventListener('click', () => { currentMonday = addDays(currentMonday,-7); render(); });
+document.getElementById('next-week').addEventListener('click', () => { currentMonday = addDays(currentMonday, 7); render(); });
 
 document.getElementById('projects-list').addEventListener('click', e => {
-  // Toggle card open
-  const header = e.target.closest('.project-header');
-  if (header && !e.target.closest('[data-status-btn]') && !e.target.closest('[data-priority-btn]') && !e.target.closest('[data-check]')) {
-    const id = header.closest('.project-card').dataset.id;
-    openCards.has(id) ? openCards.delete(id) : openCards.add(id);
-    render(); return;
-  }
+  // Expand
+  const exp = e.target.closest('[data-expand]');
+  if (exp) { const id=exp.dataset.expand; openCards.has(id)?openCards.delete(id):openCards.add(id); render(); return; }
 
-  // Check / uncheck whole project
-  const check = e.target.closest('[data-check]');
-  if (check) {
-    const id = check.dataset.check;
-    const p = getProject(currentMonday, id);
-    p.status = p.status === 'done' ? 'on-track' : 'done';
-    setProject(currentMonday, id, p);
-    render(); return;
-  }
+  // Check
+  const chk = e.target.closest('[data-check]');
+  if (chk) { const id=chk.dataset.check; const p=getP(currentMonday,id); p.status=p.status==='complete'?'not-started':'complete'; setP(currentMonday,id,p); render(); return; }
 
-  // Status badge click
-  const statusBtn = e.target.closest('[data-status-btn]');
-  if (statusBtn) {
-    activeStatusTarget = statusBtn.dataset.statusBtn;
-    const rect = statusBtn.getBoundingClientRect();
-    showPopover('status-popover', rect);
-    return;
-  }
+  // Priority badge
+  const pbtn = e.target.closest('[data-pbtn]');
+  if (pbtn) { activePriorityId=pbtn.dataset.pbtn; showPop('priority-pop', pbtn); return; }
 
-  // Priority dot click
-  const priorityBtn = e.target.closest('[data-priority-btn]');
-  if (priorityBtn) {
-    activePriorityTarget = priorityBtn.dataset.priorityBtn;
-    const rect = priorityBtn.getBoundingClientRect();
-    showPopover('priority-popover', rect);
-    return;
-  }
+  // Status badge
+  const sbtn = e.target.closest('[data-sbtn]');
+  if (sbtn) { activeStatusId=sbtn.dataset.sbtn; showPop('status-pop', sbtn); return; }
 
-  // Subtask checkbox
+  // Outcome tag
+  const ot = e.target.closest('[data-outcome]');
+  if (ot) { const id=ot.dataset.oid; const p=getP(currentMonday,id); p.fridayOutcome=p.fridayOutcome===ot.dataset.outcome?'':ot.dataset.outcome; setP(currentMonday,id,p); render(); return; }
+
+  // Subtask cb
   const cb = e.target.closest('[data-cb]');
-  if (cb) {
-    const id = cb.dataset.cb; const idx = parseInt(cb.dataset.idx);
-    const p = getProject(currentMonday, id);
-    p.subtasks[idx].done = !p.subtasks[idx].done;
-    setProject(currentMonday, id, p);
-    render(); return;
-  }
+  if (cb) { const id=cb.dataset.cb; const idx=+cb.dataset.idx; const p=getP(currentMonday,id); p.subtasks[idx].done=!p.subtasks[idx].done; setP(currentMonday,id,p); render(); return; }
 
   // Delete subtask
-  const del = e.target.closest('[data-st-delete]');
-  if (del) {
-    const id = del.dataset.stDelete; const idx = parseInt(del.dataset.idx);
-    const p = getProject(currentMonday, id);
-    p.subtasks.splice(idx, 1);
-    setProject(currentMonday, id, p);
-    render(); return;
-  }
+  const stdel = e.target.closest('[data-stdel]');
+  if (stdel) { const id=stdel.dataset.stdel; const idx=+stdel.dataset.idx; const p=getP(currentMonday,id); p.subtasks.splice(idx,1); setP(currentMonday,id,p); render(); return; }
 
   // Add subtask
-  const addSub = e.target.closest('[data-add-subtask]');
-  if (addSub) {
-    const id = addSub.dataset.addSubtask;
-    const p = getProject(currentMonday, id);
-    p.subtasks.push({ text: '', done: false });
-    setProject(currentMonday, id, p);
-    openCards.add(id);
-    render();
-    // Focus the new input
-    setTimeout(() => {
-      const inputs = document.querySelectorAll(`[data-st-text="${id}"]`);
-      if (inputs.length) inputs[inputs.length - 1].focus();
-    }, 50);
-    return;
-  }
+  const addsub = e.target.closest('[data-addsub]');
+  if (addsub) { const id=addsub.dataset.addsub; const p=getP(currentMonday,id); p.subtasks.push({text:'',done:false}); setP(currentMonday,id,p); openCards.add(id); render(); setTimeout(()=>{ const ins=document.querySelectorAll(`[data-st="${id}"]`); if(ins.length) ins[ins.length-1].focus(); },50); return; }
 
   // Remove partner
-  const removePartner = e.target.closest('[data-remove-partner]');
-  if (removePartner) {
-    const id = removePartner.dataset.partnerId; const idx = parseInt(removePartner.dataset.removePartner);
-    const p = getProject(currentMonday, id);
-    p.partners.splice(idx, 1);
-    setProject(currentMonday, id, p);
-    render(); return;
-  }
-});
-
-// Input changes
-document.getElementById('projects-list').addEventListener('change', e => {
-  const field = e.target.dataset.field;
-  if (field === 'dueDate') {
-    const id = e.target.dataset.id;
-    const p = getProject(currentMonday, id);
-    p.dueDate = e.target.value;
-    setProject(currentMonday, id, p);
-    render();
-  }
+  const prem = e.target.closest('[data-premove]');
+  if (prem) { const id=prem.dataset.premove; const idx=+prem.dataset.idx; const p=getP(currentMonday,id); p.partners.splice(idx,1); setP(currentMonday,id,p); render(); return; }
 });
 
 document.getElementById('projects-list').addEventListener('input', e => {
-  // Subtask text edit
-  const stText = e.target.dataset.stText;
-  if (stText) {
-    const idx = parseInt(e.target.dataset.idx);
-    const p = getProject(currentMonday, stText);
-    p.subtasks[idx].text = e.target.value;
-    setProject(currentMonday, stText, p);
-  }
+  const st = e.target.dataset.st;
+  if (st) { const idx=+e.target.dataset.idx; const p=getP(currentMonday,st); p.subtasks[idx].text=e.target.value; setP(currentMonday,st,p); return; }
+
+  const mon = e.target.dataset.monday;
+  if (mon) { const p=getP(currentMonday,mon); p.mondayGoal=e.target.value; setP(currentMonday,mon,p); return; }
+
+  const notes = e.target.dataset.notes;
+  if (notes) { const p=getP(currentMonday,notes); p.notes=e.target.value; setP(currentMonday,notes,p); return; }
+});
+
+document.getElementById('projects-list').addEventListener('change', e => {
+  const due = e.target.dataset.due;
+  if (due) { const p=getP(currentMonday,due); p.dueDate=e.target.value; setP(currentMonday,due,p); render(); return; }
+
+  const effort = e.target.dataset.effort;
+  if (effort) { const p=getP(currentMonday,effort); p.effort=e.target.value; setP(currentMonday,effort,p); return; }
 });
 
 document.getElementById('projects-list').addEventListener('keydown', e => {
-  // Add partner on Enter
-  const partnerInput = e.target.dataset.partnerInput;
-  if (partnerInput && e.key === 'Enter') {
-    const val = e.target.value.trim();
-    if (val) {
-      const p = getProject(currentMonday, partnerInput);
-      p.partners.push(val);
-      setProject(currentMonday, partnerInput, p);
-      render();
-    }
-  }
-  // Add new subtask on Enter
-  const stText = e.target.dataset.stText;
-  if (stText && e.key === 'Enter') {
-    e.preventDefault();
-    const p = getProject(currentMonday, stText);
-    p.subtasks.push({ text: '', done: false });
-    setProject(currentMonday, stText, p);
-    openCards.add(stText);
-    render();
-    setTimeout(() => {
-      const inputs = document.querySelectorAll(`[data-st-text="${stText}"]`);
-      if (inputs.length) inputs[inputs.length - 1].focus();
-    }, 50);
-  }
+  const pi = e.target.dataset.pinput;
+  if (pi && e.key==='Enter') { const v=e.target.value.trim(); if(v){const p=getP(currentMonday,pi); p.partners.push(v); setP(currentMonday,pi,p); render();} return; }
+  const st = e.target.dataset.st;
+  if (st && e.key==='Enter') { e.preventDefault(); const p=getP(currentMonday,st); p.subtasks.push({text:'',done:false}); setP(currentMonday,st,p); openCards.add(st); render(); setTimeout(()=>{ const ins=document.querySelectorAll(`[data-st="${st}"]`); if(ins.length) ins[ins.length-1].focus(); },50); }
 });
 
 // Popovers
-function showPopover(id, rect) {
+function showPop(id, target) {
   closePopovers();
   const pop = document.getElementById(id);
+  const r = target.getBoundingClientRect();
+  pop.style.top = (r.bottom + window.scrollY + 5) + 'px';
+  pop.style.left = r.left + 'px';
   pop.classList.add('show');
-  pop.style.top = (rect.bottom + window.scrollY + 6) + 'px';
-  pop.style.left = rect.left + 'px';
 }
-function closePopovers() {
-  document.querySelectorAll('.popover').forEach(p => p.classList.remove('show'));
-}
+function closePopovers() { document.querySelectorAll('.popover').forEach(p=>p.classList.remove('show')); }
 document.addEventListener('click', e => {
-  if (!e.target.closest('.popover') && !e.target.closest('[data-status-btn]') && !e.target.closest('[data-priority-btn]')) {
-    closePopovers();
-  }
+  if (!e.target.closest('.popover') && !e.target.closest('[data-pbtn]') && !e.target.closest('[data-sbtn]')) closePopovers();
 });
 
-document.getElementById('status-popover').addEventListener('click', e => {
-  const item = e.target.closest('[data-status]');
-  if (item && activeStatusTarget) {
-    const p = getProject(currentMonday, activeStatusTarget);
-    p.status = item.dataset.status;
-    setProject(currentMonday, activeStatusTarget, p);
-    closePopovers();
-    render();
-  }
+document.getElementById('priority-pop').addEventListener('click', e => {
+  const item = e.target.closest('[data-val]');
+  if (item && activePriorityId) { const p=getP(currentMonday,activePriorityId); p.priority=item.dataset.val; setP(currentMonday,activePriorityId,p); closePopovers(); render(); }
 });
-
-document.getElementById('priority-popover').addEventListener('click', e => {
-  const item = e.target.closest('[data-priority]');
-  if (item && activePriorityTarget) {
-    const p = getProject(currentMonday, activePriorityTarget);
-    p.priority = item.dataset.priority;
-    setProject(currentMonday, activePriorityTarget, p);
-    closePopovers();
-    render();
-  }
+document.getElementById('status-pop').addEventListener('click', e => {
+  const item = e.target.closest('[data-val]');
+  if (item && activeStatusId) { const p=getP(currentMonday,activeStatusId); p.status=item.dataset.val; setP(currentMonday,activeStatusId,p); closePopovers(); render(); }
 });
 
 render();
